@@ -36,6 +36,7 @@ Rect objectBoundingRectangle = Rect(0,0,0,0);
 //Scalar low(0, 0, 170), high(180, 80, 255);
 Scalar low(170), high(255);
 
+
 //int to string helper function
 string intToString(int number){
 
@@ -151,7 +152,8 @@ int main(int ac, char **av){
 				//show the difference image and threshold image
 				//imshow("Dif", differenceImage);
 				//imshow("Thresh", thresholdImage);
-				b.blobDetect();
+				//b.blobDetect();
+				b.showContours();
 			}else{
 				//if not in debug mode, destroy the windows so we don't see them anymore
 				//destroyWindow("Dif");

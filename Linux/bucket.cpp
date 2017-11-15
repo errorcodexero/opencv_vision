@@ -52,6 +52,9 @@ Mat bucket::colorFilter(Mat frame, std::string arg ) {
 
 bool bucket::detectContours(Mat frame, std::vector<std::vector<Point>> &contours)
 {
+	frame = colorFilter(frame_original,"gray");
+	threshold(frame,frame,200,255,3);
+	imshow("Thresholded", frame);
 	int k_size;
 	std::vector<Vec4i> hierachy;
 	Mat canny_output;
@@ -171,6 +174,23 @@ Scalar bucket::detect()
 	filterContourArea(contours, 500);
 	poly(contours);
 	return Scalar(0,0);
+}
+
+void bucket::showContours() {
+	Mat frame;
+	frame = colorFilter(frame,"gray");
+	threshold(frame_original,frame,200,255,3);
+	imshow("Thresholded",frame);
+	int k_size;
+	std::vector<Vec4i> hierachy;
+	Mat canny_output;
+	blur(frame, frame, Size(5,5));
+	Canny(frame, canny_output, 25, 75);
+	findContours(canny_output, contours, hierachy, CV_RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+	//filterContourArea(contours, 200);
+	Mat drawing = Mat::zeros(canny_output.size(), CV_8UC3);
+	drawContours(drawing, contours, -1, Scalar(255,255,255),1,8,hierachy,1);
+	imshow("contours", drawing);
 }
 
 bucket::~bucket()

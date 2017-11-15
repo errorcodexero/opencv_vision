@@ -23,6 +23,7 @@ public:
 	bucket(Mat frame, Scalar low_threshold, Scalar high_threshold);
 	virtual Scalar detect();
 	void blobDetect();
+	void showContours();
 	~bucket();
 };
 
