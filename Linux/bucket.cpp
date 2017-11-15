@@ -38,6 +38,13 @@ Mat bucket::colorFilter(Mat frame, std::string arg ) {
 		//std::cout << filtered.type() << std::endl;
 		return filtered;
 	}
+	else if (arg=="gray") {
+		Mat gray;
+		cvtColor(frame_original,gray,COLOR_BGR2GRAY);
+		return gray;
+	
+	
+	}
 	else return Mat();
 }
 
@@ -102,7 +109,7 @@ bool bucket::filterRecArea(std::vector<Rect>& rects, double limit)
 
 void bucket::blobDetect()
 {
-	Mat blob=colorFilter(frame,"blobs");
+	Mat blob=colorFilter(frame,"gray");
 	//Mat blob = frame;
 	//imshow("blobs", blob);
 	SimpleBlobDetector::Params params;
@@ -118,8 +125,8 @@ void bucket::blobDetect()
 
 	// Filter by Area.
 	params.filterByArea = true;
-	params.minArea = 1000;
-	params.maxArea = 80000;
+	params.minArea = 1500;
+	params.maxArea = 90000;
 
 	params.filterByCircularity = false;
 	params.filterByConvexity = false;
@@ -139,7 +146,7 @@ void bucket::blobDetect()
 	drawKeypoints(blob, Keypoints, im_with_keypoints, Scalar(0, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 
 	// Show blobs
-	
+	imshow("keypoints", im_with_keypoints);
 	
 	for (int i = 0; i < Keypoints.size(); i++) {
 		Point p = Keypoints[i].pt;

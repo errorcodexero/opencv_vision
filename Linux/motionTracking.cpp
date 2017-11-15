@@ -33,8 +33,8 @@ int theObject[2] = {0,0};
 //bounding rectangle of the object, we will use the center of this as its position.
 Rect objectBoundingRectangle = Rect(0,0,0,0);
 
-Scalar low(0, 0, 160), high(180, 255, 255);
-
+//Scalar low(0, 0, 170), high(180, 80, 255);
+Scalar low(170), high(255);
 
 //int to string helper function
 string intToString(int number){
@@ -114,25 +114,27 @@ int main(int ac, char **av){
 	//video capture object.
 	VideoCapture capture(0);
 
-	while(1){
-
-		//we can loop the video by re-opening the capture every time the video reaches its last frame
-
-		//capture.open(*av);
-
 		if(!capture.isOpened()){
 			cout<<"ERROR ACQUIRING VIDEO FEED\n";
 			getchar();
 			return -1;
 		}
 
+	
+
+	while(1){
+
+		//we can loop the video by re-opening the capture every time the video reaches its last frame
+		//capture.open(*av);
+
 		//check if the video has reach its last frame.
 		//we add '-1' because we are reading two frames from the video at a time.
 		//if this is not included, we get a memory error!
-		while(capture.get(CV_CAP_PROP_POS_FRAMES)<capture.get(CV_CAP_PROP_FRAME_COUNT)-1){
+		
 
 			//read first frame
-			capture.read(frame1);
+			//capture.read(frame1); 
+			capture >> frame1;
 			//convert frame1 to gray scale for frame differencing
 			//cvtColor(frame1, grayImage1, COLOR_BGR2GRAY);
 			//copy second frame
@@ -211,11 +213,11 @@ int main(int ac, char **av){
 			}
 
 
-		}
+		
 		//release the capture before re-opening and looping again.
-		capture.release();
+		
 	}
-
+	capture.release();
 	return 0;
 
 }
