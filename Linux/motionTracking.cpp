@@ -14,8 +14,9 @@
 //IN THE SOFTWARE.
 
 //#include "stdafx.h"
+#include <stdio.h>
 #include <opencv2/opencv.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui.hpp>
 #include "bucket.h"
 
 using namespace std;
@@ -44,7 +45,7 @@ string intToString(int number){
 	return ss.str();
 }
 
-void searchForMovement(Mat thresholdImage, Mat &cameraFeed){
+/*void searchForMovement(Mat thresholdImage, Mat &cameraFeed){
 	//notice how we use the '&' operator for the cameraFeed. This is because we wish
 	//to take the values passed into the function and manipulate them, rather than just working with a copy.
 	//eg. we draw to the cameraFeed in this function which is then displayed in the main() function.
@@ -89,10 +90,10 @@ void searchForMovement(Mat thresholdImage, Mat &cameraFeed){
 
 
 
-}
+}*/
 int main(int ac, char **av){
-	ac--;
-	av++;
+	//ac--;
+	//av++;
 
 	//some boolean variables for added functionality
 	bool objectDetected = false;
@@ -111,13 +112,13 @@ int main(int ac, char **av){
 	//thresholded difference image (for use in findContours() function)
 	Mat thresholdImage;
 	//video capture object.
-	VideoCapture capture;
+	VideoCapture capture(0);
 
 	while(1){
 
 		//we can loop the video by re-opening the capture every time the video reaches its last frame
 
-		capture.open(*av);
+		//capture.open(*av);
 
 		if(!capture.isOpened()){
 			cout<<"ERROR ACQUIRING VIDEO FEED\n";
@@ -133,16 +134,16 @@ int main(int ac, char **av){
 			//read first frame
 			capture.read(frame1);
 			//convert frame1 to gray scale for frame differencing
-			cvtColor(frame1, grayImage1, COLOR_BGR2GRAY);
+			//cvtColor(frame1, grayImage1, COLOR_BGR2GRAY);
 			//copy second frame
-			capture.read(frame2);
+			//capture.read(frame2);
 			//convert frame2 to gray scale for frame differencing
-			cvtColor(frame2, grayImage2, COLOR_BGR2GRAY);
+			//cvtColor(frame2, grayImage2, COLOR_BGR2GRAY);
 			//perform frame differencing with the sequential images. This will output an "intensity image"
-			//do not confuse this with a threshold image, we will need to perform thresholding afterwards.
-			absdiff(grayImage1, grayImage2, differenceImage);
+			////do not confuse this with a threshold image, we will need to perform thresholding afterwards.
+			//absdiff(grayImage1, grayImage2, differenceImage);
 			//threshold intensity image at a given sensitivity value
-			threshold(differenceImage, thresholdImage, SENSITIVITY_VALUE, 255, CV_8U);
+			//threshold(differenceImage, thresholdImage, SENSITIVITY_VALUE, 255, CV_8U);
 			bucket b(frame1,low,high);
 			if(debugMode==true){
 				//show the difference image and threshold image
