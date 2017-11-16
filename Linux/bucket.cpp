@@ -39,9 +39,14 @@ Mat bucket::colorFilter(Mat frame, std::string arg ) {
 		return filtered;
 	}
 	else if (arg=="gray") {
-		Mat gray;
+		Mat gray, thresholded;
 		cvtColor(frame_original,gray,COLOR_BGR2GRAY);
-		return gray;
+		Mat mask, filtered;
+		inRange(gray, low_threshold, high_threshold, mask);
+		bitwise_and(frame, frame, filtered, mask);
+		cvtColor(filtered, filtered, COLOR_BGR2GRAY);
+		imshow("filtered",filtered);
+		return filtered;
 	
 	
 	}
@@ -92,7 +97,7 @@ bool bucket::poly(std::vector<std::vector<Point>> contours)
 
 bool bucket::filterContourArea(std::vector<std::vector<Point>>& contours, double limit)			//Not Working
 {
-	for (size_t i = 0; i < contours.size(); i++) {
+	for (int i = 0; i < contours.size(); i++) {
 		//if (contourArea(contours[i]) < limit) contours.erase(contours.begin() + i);
 		if (contours[i].size() < limit) contours.erase(contours.begin() + i);
 	};
@@ -122,9 +127,9 @@ void bucket::blobDetect()
 	params.blobColor = 255;
 
 	// Change thresholds
-	params.minThreshold = 200;
-	params.maxThreshold = 250;
-	params.thresholdStep = 25;
+	params.minThreshold = 130;
+	params.maxThreshold = 200;
+	params.thresholdStep = 10;
 
 	// Filter by Area.
 	params.filterByArea = true;
@@ -177,9 +182,9 @@ Scalar bucket::detect()
 }
 
 void bucket::showContours() {
-	Mat frame;
-	frame = colorFilter(frame,"gray");
-	threshold(frame_original,frame,200,255,3);
+	Mat gray_frame,frame;
+	gray_frame = colorFilter(frame_original,"gray");
+	threshold(gray_frame,frame,200,255,3);
 	imshow("Thresholded",frame);
 	int k_size;
 	std::vector<Vec4i> hierachy;
@@ -187,7 +192,8 @@ void bucket::showContours() {
 	blur(frame, frame, Size(5,5));
 	Canny(frame, canny_output, 25, 75);
 	findContours(canny_output, contours, hierachy, CV_RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-	//filterContourArea(contours, 200);
+	filterContourArea(contours, 0);
+	//poly(contours);
 	Mat drawing = Mat::zeros(canny_output.size(), CV_8UC3);
 	drawContours(drawing, contours, -1, Scalar(255,255,255),1,8,hierachy,1);
 	imshow("contours", drawing);

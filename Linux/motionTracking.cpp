@@ -17,6 +17,10 @@
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
+#include <libv4l2.h>
+#include <linux/videodev2.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
 #include "bucket.h"
 
 using namespace std;
@@ -34,7 +38,7 @@ int theObject[2] = {0,0};
 Rect objectBoundingRectangle = Rect(0,0,0,0);
 
 //Scalar low(0, 0, 170), high(180, 80, 255);
-Scalar low(170), high(255);
+Scalar low(130), high(200);
 
 
 //int to string helper function
@@ -107,14 +111,31 @@ int main(int ac, char **av){
 	//the two frames we will be comparing
 	Mat frame1,frame2;
 	//their grayscale images (needed for absdiff() function)
-	Mat grayImage1,grayImage2;
-	//resulting difference image
-	Mat differenceImage;
-	//thresholded difference image (for use in findContours() function)
-	Mat thresholdImage;
+	// open capture
+int descriptor = v4l2_open("/dev/video0", O_RDWR);
+
+// manual exposure control
+v4l2_control c;
+/*c.id = V4L2_CID_EXPOSURE_AUTO;
+c.value = V4L2_EXPOSURE_MANUAL;
+if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
+    cout << "success";*/
+
+// manual brightness control
+c.id = V4L2_CID_BRIGHTNESS;
+c.value = 30;
+if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
+{
+    cout << c.value << " success";
+}
+// auto priority control
+/*c.id = V4L2_CID_EXPOSURE_AUTO_PRIORITY;
+c.value = 3;
+if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
+    cout << "success";*/
 	//video capture object.
 	VideoCapture capture(0);
-
+	//capture.set(CAP_PROP_BRIGHTNESS,0.1);
 		if(!capture.isOpened()){
 			cout<<"ERROR ACQUIRING VIDEO FEED\n";
 			getchar();
