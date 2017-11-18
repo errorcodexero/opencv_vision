@@ -59,7 +59,8 @@ Mat bucket::colorFilter(Mat frame, std::string arg ) {
 		Mat mask;
 		Mat filtered(frame.rows, frame.cols, frame.type());
 		inRange(gray, low_threshold, high_threshold, mask);
-		bitwise_and(frame_original, frame_original, filtered, mask);
+		bitwise_and(gray, gray, filtered, mask);
+		//cvtColor(frame,frame,COLOR_BGR2GRAY);
 		imshow("f",filtered);
 		return filtered;
 	
@@ -241,11 +242,11 @@ Scalar bucket::detect()
 	return Scalar(0,0);
 }
 
-void bucket::showContours() {
+/*void bucket::showContours() {
 	/*Mat gray_frame,frame;
 	gray_frame = colorFilter(frame_original,"gray");
 	threshold(gray_frame,frame,200,255,3);
-	imshow("Thresholded",frame);*/
+	imshow("Thresholded",frame);
 	//Mat frame_gray = colorFilter(frame_original,"gray");
 	
 	//Mat frame = colorFilter(frame_gray, "contours");
@@ -266,7 +267,7 @@ void bucket::showContours() {
 	//imshow("contours", drawing);
 	//filterContourArea(contours, 200);
 	poly(frame, contours);
-}
+}*/
 
 bucket::~bucket()
 {

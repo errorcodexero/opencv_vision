@@ -162,10 +162,11 @@ if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
 			Mat frame = cvCreateImage(cvGetSize(frame1), frame1.depth, frame1.channels);
 			cvCopy(frame1, frame, NULL);
 			cvResetImageROI(frame1);*/
-			/*Rect cropWindow(0, 0, 640, 240);
-			Mat frame = frame1(cropWindow);
-			imshow("frame", frame);*/
-			bucket b(frame1,low,high);
+			Rect cropWindow(0, 240, 640, 240);
+			Mat frame;
+			frame1(cropWindow).copyTo(frame);
+			imshow("frame", frame);
+			bucket b(frame,low,high);
 			//b.showContours();
 			b.blobDetect();
 			if(debugMode==true){
@@ -196,7 +197,7 @@ if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
 			//if tracking enabled, search for contours in our thresholded image
 
 			//show our captured frame
-			imshow("Frame1",frame1);
+			imshow("Frame1",frame);
 			//check to see if a button has been pressed.
 			//this 10ms delay is necessary for proper operation of this program
 			//if removed, frames will not have enough time to referesh and a blank 
