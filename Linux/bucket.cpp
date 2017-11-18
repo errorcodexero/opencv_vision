@@ -2,7 +2,7 @@
 #include "bucket.h"
 #include <vector>
 
-Scalar hsvlow(0, 0, 150), hsvhigh(180, 80, 220);
+Scalar hsvlow(0, 0, 150), hsvhigh(180, 30, 230);
 
 std::string bucket::intToString(int number) {
 
@@ -19,6 +19,18 @@ bucket::bucket(Mat frame, Scalar low_threshold, Scalar high_threshold)
 	this->low_threshold = low_threshold;
 	this->high_threshold = high_threshold;
 }
+
+
+/*Mat bucket::yuvEqualize(Mat frame) {
+	cvtColor(frame,frame,CV_BGR2YUV);
+	std::vector<Mat> channels;
+	split(frame,channels);
+	equalizeHist(channels[0],channels[0]);
+	merge(channels, frame);
+	cvtColor(frame,frame,CV_YUV2BGR);
+	imshow("YUV", frame);
+	return frame;
+}*/
 
 Mat bucket::colorFilter(Mat frame, std::string arg ) {
 	if (arg == "contours") {
@@ -43,14 +55,13 @@ Mat bucket::colorFilter(Mat frame, std::string arg ) {
 	else if (arg=="gray") {
 		Mat gray, thresholded;
 		cvtColor(frame,gray,COLOR_BGR2GRAY);
+		imshow("gray", gray);
 		Mat mask;
 		Mat filtered(frame.rows, frame.cols, frame.type());
 		inRange(gray, low_threshold, high_threshold, mask);
-		bitwise_and(frame, frame, filtered, mask);
-		//cvtColor(filtered, filtered, COLOR_BGR2GRAY);
-		imshow("filtered",filtered);
+		bitwise_and(frame_original, frame_original, filtered, mask);
+		imshow("f",filtered);
 		return filtered;
-	
 	
 	}
 	else return Mat();
@@ -76,7 +87,7 @@ bool bucket::detectContours(Mat frame, std::vector<std::vector<Point>> &contours
 }
 
 
-bool bucket::poly(Mat frame, std::vector<std::vector<Point>> contours)
+std::vector<Rect> bucket::poly(Mat frame, std::vector<std::vector<Point>> contours)
 {
 	//std::vector<std::vector<Point>>::iterator i = contours.begin();
 	//std::vector<std::vector<Point>> derivedPolygon;
@@ -87,12 +98,12 @@ bool bucket::poly(Mat frame, std::vector<std::vector<Point>> contours)
 		double epsilon = 0.1 * arcLength(contours[i], true);
 		approxPolyDP(contours[i], derivedPolygon[i], epsilon, true);
 		rectangles.push_back(boundingRect(derivedPolygon[i]));
-		rectangle(rects, rectangles[i], Scalar(255, 255, 255));
+		
 	}
 	Mat poly = Mat::zeros(Size(frame.cols,frame.rows),frame.type());
 	//drawContours(poly, derivedPolygon, -1,255);
-	imshow("rects", rects);
 	
+	//std::cout << rectangles.size() << std::endl;
 	//Merge overlapped
 	bool changed = true;
 	while(changed) {
@@ -108,17 +119,21 @@ bool bucket::poly(Mat frame, std::vector<std::vector<Point>> contours)
 					r = r | orig[j];
 					orig.erase(orig.begin()+j);
 					changed = true;
+					
 				}
 				else j++;
 			}
-			rectangles.push_back(r);
+			if ((r.area()>400) && (r.width/r.height < 0.8)) rectangles.push_back(r);
 		}
 		
 	}
-	
-	
+	//std::cout << rectangles.size() << std::endl;
+	/*for (unsigned int i =0; i< rectangles.size(); i++) {
+		rectangle(rects, rectangles[i], Scalar(255, 255, 255));
+	}*/
+	//imshow("rects", rects);
 	//imshow("poly", poly);
-	return true;
+	return rectangles;
 }
 
 bool bucket::filterContourArea(std::vector<std::vector<Point>>& contours, double limit)			//Not Working
@@ -129,7 +144,7 @@ bool bucket::filterContourArea(std::vector<std::vector<Point>>& contours, double
 	};
 	Mat drawing = Mat::zeros(frame_original.size(), frame_original.type());
 	drawContours(drawing, contours, -1, Scalar(255, 255, 255));
-	imshow("filtered contours", drawing);
+	//imshow("filtered contours", drawing);
 	return true;
 }
 
@@ -143,9 +158,12 @@ bool bucket::filterRecArea(std::vector<Rect>& rects, double limit)
 
 void bucket::blobDetect()
 {
-	Mat blob=colorFilter(frame,"gray");
+	//Mat blob=colorFilter(frame,"gray");
 	//Mat blob = frame;
 	//imshow("blobs", blob);
+	//Mat hsv_frame = colorFilter(frame_original, "contours");
+	Mat blob = colorFilter(frame_original, "gray");
+	//Mat blob = hsv_frame;
 	SimpleBlobDetector::Params params;
 
 
@@ -181,15 +199,31 @@ void bucket::blobDetect()
 
 	// Show blobs
 	imshow("keypoints", im_with_keypoints);
-	
+	std::vector<Vec4i> hierachy;
+	Mat canny_output;
+	std::vector<Point> Targets;
+	Canny(blob, canny_output, 25, 75);
+	findContours(canny_output, contours, hierachy, CV_RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+	//filterContourArea(contours, 0);
+	//poly(contours);
+	//Mat drawing = Mat::zeros(canny_output.size(), CV_8UC3);
+	//drawContours(drawing, contours, -1, Scalar(255,255,255),1,8,hierachy,1);
+	//imshow("contours", drawing);
+	//filterContourArea(contours, 200);
+	std::vector<Rect> rectangles = poly(frame, contours);
 	for (unsigned int i = 0; i < Keypoints.size(); i++) {
 		Point p = Keypoints[i].pt;
-		circle(frame, p, 20, Scalar(0, 255, 0), 2);
-		line(frame, p, Point(p.x, p.y - 25), Scalar(0, 255, 0), 2);
-		line(frame, p, Point(p.x, p.y + 25), Scalar(0, 255, 0), 2);
-		line(frame, p, Point(p.x - 25, p.y), Scalar(0, 255, 0), 2);
-		line(frame, p, Point(p.x + 25, p.y), Scalar(0, 255, 0), 2);
-		putText(frame, "Tracking object at (" + intToString(p.x) + "," + intToString(p.y) + ")", p, 1, 1, Scalar(255, 0, 0), 2);
+		for(unsigned int j = 0;j<rectangles.size();j++) {
+			Rect r = rectangles[j];
+			if ((p.x >= r.x) && (p.y >= r.y) && (p.x <= r.x + r.width) && (p.y <= r.y + r.height)) {
+				circle(frame, p, 20, Scalar(0, 255, 0), 2);
+				line(frame, p, Point(p.x, p.y - 25), Scalar(0, 255, 0), 2);
+				line(frame, p, Point(p.x, p.y + 25), Scalar(0, 255, 0), 2);
+				line(frame, p, Point(p.x - 25, p.y), Scalar(0, 255, 0), 2);
+				line(frame, p, Point(p.x + 25, p.y), Scalar(0, 255, 0), 2);
+				putText(frame, "Tracking object at (" + intToString(p.x) + "," + intToString(p.y) + ")", p, 1, 1, Scalar(255, 0, 0), 2);
+			}
+		}
 	}
 	//imshow("keypoints", frame);
 	//return Scalar();
@@ -215,7 +249,10 @@ void bucket::showContours() {
 	//Mat frame_gray = colorFilter(frame_original,"gray");
 	
 	//Mat frame = colorFilter(frame_gray, "contours");
-	Mat hsv_frame = colorFilter(frame_original, "contours");
+	Mat yuv_eq = yuvEqualize(frame_original);
+	//Mat hsv_frame = colorFilter(frame_original, "contours");
+	//Mat frame = colorFilter(hsv_frame, "gray");
+	Mat hsv_frame = colorFilter(yuv_eq, "contours");
 	Mat frame = colorFilter(hsv_frame, "gray");
 	std::vector<Vec4i> hierachy;
 	Mat canny_output;
@@ -226,7 +263,7 @@ void bucket::showContours() {
 	//poly(contours);
 	Mat drawing = Mat::zeros(canny_output.size(), CV_8UC3);
 	drawContours(drawing, contours, -1, Scalar(255,255,255),1,8,hierachy,1);
-	imshow("contours", drawing);
+	//imshow("contours", drawing);
 	//filterContourArea(contours, 200);
 	poly(frame, contours);
 }

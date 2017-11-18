@@ -38,7 +38,7 @@ int theObject[2] = {0,0};
 Rect objectBoundingRectangle = Rect(0,0,0,0);
 
 //Scalar low(0, 0, 170), high(180, 80, 255);
-Scalar low(130), high(200);
+Scalar low(150), high(230);
 
 
 //int to string helper function
@@ -113,26 +113,27 @@ int main(int ac, char **av){
 	//their grayscale images (needed for absdiff() function)
 	// open capture
 int descriptor = v4l2_open("/dev/video0", O_RDWR);
-
-// manual exposure control
-v4l2_control c;
-/*c.id = V4L2_CID_EXPOSURE_AUTO;
+	v4l2_control c;
+c.id = V4L2_CID_EXPOSURE_AUTO_PRIORITY;
+c.value = 3;
+if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
+    cout << "success";
+c.id = V4L2_CID_EXPOSURE_AUTO;
 c.value = V4L2_EXPOSURE_MANUAL;
 if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
-    cout << "success";*/
+    cout << "success";
 
-// manual brightness control
+// manual brigctness control
 c.id = V4L2_CID_BRIGHTNESS;
 c.value = 100;
 if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
 {
     cout << c.value << " success";
 }
-// auto priority control
-/*c.id = V4L2_CID_EXPOSURE_AUTO_PRIORITY;
-c.value = 3;
+c.id = V4L2_CID_EXPOSURE_ABSOLUTE;
+c.value = 30;
 if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
-    cout << "success";*/
+    cout << "success";
 	//video capture object.
 	VideoCapture capture(0);
 	//capture.set(CAP_PROP_BRIGHTNESS,0.1);
@@ -157,19 +158,16 @@ if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
 			//read first frame
 			//capture.read(frame1); 
 			capture >> frame1;
-			//convert frame1 to gray scale for frame differencing
-			//cvtColor(frame1, grayImage1, COLOR_BGR2GRAY);
-			//copy second frame
-			//capture.read(frame2);
-			//convert frame2 to gray scale for frame differencing
-			//cvtColor(frame2, grayImage2, COLOR_BGR2GRAY);
-			//perform frame differencing with the sequential images. This will output an "intensity image"
-			////do not confuse this with a threshold image, we will need to perform thresholding afterwards.
-			//absdiff(grayImage1, grayImage2, differenceImage);
-			//threshold intensity image at a given sensitivity value
-			//threshold(differenceImage, thresholdImage, SENSITIVITY_VALUE, 255, CV_8U);
+			/*cvSetImageROI(frame1, cvRect(0, 240, 640, 240));
+			Mat frame = cvCreateImage(cvGetSize(frame1), frame1.depth, frame1.channels);
+			cvCopy(frame1, frame, NULL);
+			cvResetImageROI(frame1);*/
+			/*Rect cropWindow(0, 0, 640, 240);
+			Mat frame = frame1(cropWindow);
+			imshow("frame", frame);*/
 			bucket b(frame1,low,high);
-			b.showContours();
+			//b.showContours();
+			b.blobDetect();
 			if(debugMode==true){
 				//show the difference image and threshold image
 				//imshow("Dif", differenceImage);
