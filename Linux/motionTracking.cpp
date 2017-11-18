@@ -123,7 +123,7 @@ if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
 
 // manual brightness control
 c.id = V4L2_CID_BRIGHTNESS;
-c.value = 30;
+c.value = 100;
 if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
 {
     cout << c.value << " success";
@@ -169,12 +169,13 @@ if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
 			//threshold intensity image at a given sensitivity value
 			//threshold(differenceImage, thresholdImage, SENSITIVITY_VALUE, 255, CV_8U);
 			bucket b(frame1,low,high);
+			b.showContours();
 			if(debugMode==true){
 				//show the difference image and threshold image
 				//imshow("Dif", differenceImage);
 				//imshow("Thresh", thresholdImage);
 				//b.blobDetect();
-				b.showContours();
+				
 			}else{
 				//if not in debug mode, destroy the windows so we don't see them anymore
 				//destroyWindow("Dif");
