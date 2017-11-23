@@ -1,0 +1,77 @@
+[33mcommit 443725ec41d6ef203c68f490dd49bab3099e6594[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Vi Vuong <vuongkyvi@gmail.com>
+Date:   Wed Nov 22 01:12:56 2017 -0800
+
+    Separate video feed for testing and improvement
+
+[33mcommit a2efa65c674bbb12fa5eef905c10ffff6375d1d0[m
+Author: Vi Vuong <vuongkyvi@gmail.com>
+Date:   Sat Nov 18 22:41:37 2017 +0000
+
+    Overwriting bug fixed. TODO: Improve recognition
+
+[33mcommit 600fd241d021e87d5e12e360d30113a80424ad4b[m
+Author: Vi Vuong <vuongkyvi@gmail.com>
+Date:   Sat Nov 18 22:09:18 2017 +0000
+
+    Bugs await
+
+[33mcommit b5a167cc2ae198548ea0604d9037f351fb377b49[m
+Author: Vi Vuong <vuongkyvi@gmail.com>
+Date:   Sat Nov 18 19:07:06 2017 +0000
+
+    Updated camera configuration parameters and double filters
+
+[33mcommit fb0b482fd878253b5a4a31032bd6ecccea1c69cd[m
+Author: Vi Vuong <vuongkyvi@gmail.com>
+Date:   Thu Nov 16 05:01:03 2017 +0000
+
+    Bugs await
+
+[33mcommit 592d986f6466788920de800c40ea735bba378701[m
+Author: Vi Vuong <vuongkyvi@gmail.com>
+Date:   Wed Nov 15 05:02:31 2017 +0000
+
+    Bugs await
+
+[33mcommit fce761bf254703f8bcdd07f205be8c19862e7ad2[m
+Author: Vi Vuong <vuongkyvi@gmail.com>
+Date:   Wed Nov 15 04:44:28 2017 +0000
+
+    Switched from HSV to grayscale. Updated thresholds
+
+[33mcommit a5a4e325c731b52a7793b5ff8ca258d73d4ebfd3[m
+Author: Vi Vuong <vuongkyvi@gmail.com>
+Date:   Wed Nov 15 03:27:42 2017 +0000
+
+    V4L2 unknown property bug
+
+[33mcommit 0acb3f6bd951cbeef70ec689a81963edc8b4676c[m
+Author: Vi Vuong <vuongkyvi@gmail.com>
+Date:   Tue Nov 14 03:57:25 2017 +0000
+
+    Updated program and blobs parameters
+
+[33mcommit 26ae480354fc636f20d994889b78046758b42a4d[m
+Author: Vi Vuong <vuongkyvi@gmail.com>
+Date:   Sun Nov 12 17:21:42 2017 -0800
+
+    Remove *.mp4 files.
+
+[33mcommit f5aedc00d0cdd923aad2364cae5a36210e0909bf[m
+Author: vv-23 <vuongkyvi@gmail.com>
+Date:   Sun Nov 12 16:54:18 2017 -0800
+
+    Updated .gitignore to exclude videos + photos.
+
+[33mcommit 39d7dd9bc190850c3887f8e6778f11ec07688017[m
+Author: vv-23 <vuongkyvi@gmail.com>
+Date:   Sun Nov 12 16:47:14 2017 -0800
+
+    Add project files.
+
+[33mcommit bf4d2d416102c3ced79465755b44e263a6dc5305[m
+Author: vv-23 <vuongkyvi@gmail.com>
+Date:   Sun Nov 12 16:47:08 2017 -0800
+
+    Add .gitignore and .gitattributes.
