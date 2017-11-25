@@ -17,10 +17,10 @@
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
-#include <libv4l2.h>
+/*#include <libv4l2.h>
 #include <linux/videodev2.h>
 #include <sys/ioctl.h>
-#include <fcntl.h>
+#include <fcntl.h>*/
 #include "bucket.h"
 
 using namespace std;
@@ -92,11 +92,7 @@ if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
 	//video capture object.*/
 	VideoCapture capture(0);
 	//capture.set(CAP_PROP_BRIGHTNESS,0.1);
-		if(!capture.isOpened()){
-			cout<<"ERROR ACQUIRING VIDEO FEED\n";
-			getchar();
-			return -1;
-		}
+
 
 
 
@@ -104,12 +100,16 @@ if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
 
 		//we can loop the video by re-opening the capture every time the video reaches its last frame
 		capture.open(*av);
-
+		if(!capture.isOpened()){
+			cout<<"ERROR ACQUIRING VIDEO FEED\n";
+			getchar();
+			return -1;
+		}
 		//check if the video has reach its last frame.
 		//we add '-1' because we are reading two frames from the video at a time.
 		//if this is not included, we get a memory error!
 
-
+		while(capture.get(CV_CAP_PROP_POS_FRAMES)<capture.get(CV_CAP_PROP_FRAME_COUNT)-1){
 			//read first frame
 			//capture.read(frame1);
 			capture >> frame1;
@@ -117,11 +117,11 @@ if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
 			Mat frame = cvCreateImage(cvGetSize(frame1), frame1.depth, frame1.channels);
 			cvCopy(frame1, frame, NULL);
 			cvResetImageROI(frame1);*/
-			Rect cropWindow(0, 240, 640, 240);
+			/*Rect cropWindow(0, 240, 640, 240);
 			Mat frame;
 			frame1(cropWindow).copyTo(frame);
-			imshow("frame", frame);
-			bucket b(frame,low,high);
+			imshow("frame", frame);*/
+			bucket b(frame1,low,high);
 			//b.showContours();
 
 			if(debugMode==true){
@@ -150,7 +150,7 @@ if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
 			//if tracking enabled, search for contours in our thresholded image
 
 			//show our captured frame
-			imshow("Frame1",frame);
+			imshow("Frame1",frame1);
 			//check to see if a button has been pressed.
 			//this 10ms delay is necessary for proper operation of this program
 			//if removed, frames will not have enough time to referesh and a blank
@@ -188,12 +188,12 @@ if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
 
 			}
 
-
+		}
 
 		//release the capture before re-opening and looping again.
-
+		capture.release();
 	}
-	capture.release();
+
 	return 0;
 
 }
