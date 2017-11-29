@@ -63,7 +63,7 @@ Mat bucket::colorFilter(Mat frame, std::string arg ) {
 		//cvtColor(frame,frame,COLOR_BGR2GRAY);
 		imshow("f",filtered);
 		return filtered;
-	
+
 	}
 	else return Mat();
 }
@@ -99,11 +99,11 @@ std::vector<Rect> bucket::poly(Mat frame, std::vector<std::vector<Point>> contou
 		double epsilon = 0.1 * arcLength(contours[i], true);
 		approxPolyDP(contours[i], derivedPolygon[i], epsilon, true);
 		rectangles.push_back(boundingRect(derivedPolygon[i]));
-		
+
 	}
 	Mat poly = Mat::zeros(Size(frame.cols,frame.rows),frame.type());
 	//drawContours(poly, derivedPolygon, -1,255);
-	
+
 	//std::cout << rectangles.size() << std::endl;
 	//Merge overlapped
 	bool changed = true;
@@ -120,13 +120,13 @@ std::vector<Rect> bucket::poly(Mat frame, std::vector<std::vector<Point>> contou
 					r = r | orig[j];
 					orig.erase(orig.begin()+j);
 					changed = true;
-					
+
 				}
 				else j++;
 			}
 			if ((r.area()>400) && (r.width/r.height < 0.8)) rectangles.push_back(r);
 		}
-		
+
 	}
 	//std::cout << rectangles.size() << std::endl;
 	/*for (unsigned int i =0; i< rectangles.size(); i++) {
@@ -157,7 +157,7 @@ bool bucket::filterRecArea(std::vector<Rect>& rects, double limit)
 	return true;
 }
 
-void bucket::blobDetect()
+int bucket::blobDetect()
 {
 	//Mat blob=colorFilter(frame,"gray");
 	//Mat blob = frame;
@@ -212,25 +212,34 @@ void bucket::blobDetect()
 	//imshow("contours", drawing);
 	//filterContourArea(contours, 200);
 	std::vector<Rect> rectangles = poly(frame, contours);
+	Point pmin(0,0);
 	for (unsigned int i = 0; i < Keypoints.size(); i++) {
 		Point p = Keypoints[i].pt;
 		for(unsigned int j = 0;j<rectangles.size();j++) {
 			Rect r = rectangles[j];
-			if ((p.x >= r.x) && (p.y >= r.y) && (p.x <= r.x + r.width) && (p.y <= r.y + r.height)) {
-				circle(frame, p, 20, Scalar(0, 255, 0), 2);
-				line(frame, p, Point(p.x, p.y - 25), Scalar(0, 255, 0), 2);
-				line(frame, p, Point(p.x, p.y + 25), Scalar(0, 255, 0), 2);
-				line(frame, p, Point(p.x - 25, p.y), Scalar(0, 255, 0), 2);
-				line(frame, p, Point(p.x + 25, p.y), Scalar(0, 255, 0), 2);
-				putText(frame, "Tracking object at (" + intToString(p.x) + "," + intToString(p.y) + ")", p, 1, 1, Scalar(255, 0, 0), 2);
+			if(p.inside(r))
+			if (p.y>pmin.y) pmin = p;
 			}
 		}
-	}
+	circle(frame, pmin, 20, Scalar(0, 255, 0), 2);
+	line(frame, pmin, Point(pmin.x, pmin.y + 25), Scalar(0, 255, 0), 2);
+	line(frame, pmin, Point(pmin.x, pmin.y - 25), Scalar(0, 255, 0), 2);
+	line(frame, pmin, Point(pmin.x - 25, pmin.y), Scalar(0, 255, 0), 2);
+	line(frame, pmin, Point(pmin.x + 25, pmin.y), Scalar(0, 255, 0), 2);
+	putText(frame, "Tracking object at (" + intToString(pmin.x) + "," + intToString(pmin.y) + ")", pmin, 1, 1, Scalar(255, 0, 0), 2);
 	//imshow("keypoints", frame);
 	//return Scalar();
+	return xError(pmin);
 }
 
 
+int xError(Point p) {
+	int r;
+	if (p.x<200) r = p.x-200;
+	else if (p.x>280) r = p.x-280;
+	else r =0;
+	return r;
+}
 
 Scalar bucket::detect()
 {
@@ -248,7 +257,7 @@ Scalar bucket::detect()
 	threshold(gray_frame,frame,200,255,3);
 	imshow("Thresholded",frame);
 	//Mat frame_gray = colorFilter(frame_original,"gray");
-	
+
 	//Mat frame = colorFilter(frame_gray, "contours");
 	Mat yuv_eq = yuvEqualize(frame_original);
 	//Mat hsv_frame = colorFilter(frame_original, "contours");
