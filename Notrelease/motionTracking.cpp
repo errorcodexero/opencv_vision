@@ -17,10 +17,10 @@
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
-/*#include <libv4l2.h>
+#include <libv4l2.h>
 #include <linux/videodev2.h>
 #include <sys/ioctl.h>
-#include <fcntl.h>*/
+#include <fcntl.h>
 #include "bucket.h"
 
 using namespace std;
@@ -86,13 +86,13 @@ if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
     cout << c.value << " success";
 }
 c.id = V4L2_CID_EXPOSURE_ABSOLUTE;
-c.value = 30;
+c.value = 50;
 if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
     cout << "success";
 	//video capture object.
 	VideoCapture capture(0);
 	//capture.set(CAP_PROP_BRIGHTNESS,0.1);
-		capture.open(*av);
+	//capture.open(*av);
 
 
 
@@ -190,8 +190,6 @@ if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
 		}
 
 		//release the capture before re-opening and looping again.
-
-	}
 	capture.release();
 	return 0;
 

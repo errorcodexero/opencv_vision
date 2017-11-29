@@ -87,7 +87,13 @@ bool bucket::detectContours(Mat frame, std::vector<std::vector<Point>> &contours
 	return true;
 }
 
-
+int bucket::xError(Point p) {
+	int r;
+	if (p.x<200) r = p.x-200;
+	else if (p.x>280) r = p.x-280;
+	else r =0;
+	return r;
+}
 std::vector<Rect> bucket::poly(Mat frame, std::vector<std::vector<Point>> contours)
 {
 	//std::vector<std::vector<Point>>::iterator i = contours.begin();
@@ -233,13 +239,7 @@ int bucket::blobDetect()
 }
 
 
-int xError(Point p) {
-	int r;
-	if (p.x<200) r = p.x-200;
-	else if (p.x>280) r = p.x-280;
-	else r =0;
-	return r;
-}
+
 
 Scalar bucket::detect()
 {

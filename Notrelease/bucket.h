@@ -20,13 +20,14 @@ private:
 	bool filterContourArea(std::vector<std::vector<Point>>& contours, double limit);
 	bool filterRecArea(std::vector<Rect>& rects, double limit);
 	//void mergeOverlapped(
+	int xError(Point p);
 protected:
 	std::vector<std::vector<Point>> contours;
 	//Scalar hsvlow(0, 0, 170), hsvhigh(180, 80, 255);
 public:
 	bucket(Mat frame, Scalar low_threshold, Scalar high_threshold);
 	virtual Scalar detect();
-	void blobDetect();
+	int blobDetect();
 	void showContours();
 	~bucket();
 };
