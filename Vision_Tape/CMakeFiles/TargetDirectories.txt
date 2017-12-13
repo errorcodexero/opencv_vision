@@ -1,0 +1,3 @@
+/home/pi/vision/opencv_vision/Vision_Tape/CMakeFiles/rebuild_cache.dir
+/home/pi/vision/opencv_vision/Vision_Tape/CMakeFiles/edit_cache.dir
+/home/pi/vision/opencv_vision/Vision_Tape/CMakeFiles/Bucket.dir
