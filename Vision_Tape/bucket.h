@@ -27,7 +27,7 @@ protected:
 	//Scalar hsvlow(0, 0, 170), hsvhigh(180, 80, 255);
 public:
 	bucket(Mat frame, Scalar low_threshold, Scalar high_threshold);
-	virtual int detect();
+	virtual bool detect(Point &value, int &max_area, double &ratio);
 	int blobDetect();
 	void showContours();
 	Mat showFrame();

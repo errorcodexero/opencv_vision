@@ -86,7 +86,7 @@ if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
     cout << c.value << " success";
 }
 c.id = V4L2_CID_EXPOSURE_ABSOLUTE;
-c.value = 50;
+c.value = 10;
 if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
     cout << "success";
 	//video capture object.
